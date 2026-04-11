@@ -1,0 +1,41 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[project]
+name = "ed_journal_monitor"
+version = "0.1.0"
+description = "Watch Elite Dangerous journal logs and publish new entries over a local ZeroMQ socket."
+authors = [
+    { name = "CMDR-skorob", email = "cmdrskorob@gmail.com" },
+]
+readme = "README.md"
+license-files = ["LICENSE"]
+requires-python = "^3.10"
+dependencies = ["watchdog (>=6.0.0,<7.0.0)", "pyzmq (>=27.1.0,<28.0.0)"]
+
+[dependency-groups]
+docs = [
+    "Sphinx>=8.1.3,<9.0.0",
+    "sphinx-rtd-theme>=3.1.0,<4.0.0",
+    "tomli>=2.4.0,<3.0.0"
+]
+dev = [
+    "bump-my-version>=1.2.6,<2.0.0",
+    "pytest>=9.0.2,<10.0.0",
+    "pytest-cov>=7.0.0,<8.0.0",
+    # fixed for easier way to reproduce across various machines
+    "hypothesis==6.150.2"
+]
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.coverage.run]
+source = ["ed_journal_monitor"]
+
+[tool.pytest.ini_options]
+addopts = "--verbose -s --hypothesis-profile=default"
