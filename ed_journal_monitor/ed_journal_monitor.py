@@ -25,6 +25,8 @@ JOURNAL_REGEX = (r".*Journal\."
                  r"\.(?P<part>\d{2})\.log$")
 JOURNAL_REGEX_PATTERN = re.compile(JOURNAL_REGEX)
 
+DEFAULT_SOCKET_ADDRESS = "tcp://127.0.0.1:5555"
+
 
 def _to_stamp(match_dict: dict[str, str]) -> tuple[datetime, int]:
     """
@@ -65,7 +67,8 @@ class JournalHandler(RegexMatchingEventHandler):
     Custom event handler for journal files, extending 
     RegexMatchingEventHandler from the watchdog library.
     """
-    def __init__(self) -> None:
+    def __init__(self, 
+                 socket_address: str = DEFAULT_SOCKET_ADDRESS) -> None:
         super().__init__(regexes=[JOURNAL_REGEX], 
                          ignore_regexes=[], 
                          ignore_directories=True, 
@@ -80,7 +83,8 @@ class JournalHandler(RegexMatchingEventHandler):
         logger.info(f"Opened latest journal: {latest_journal_path}")
         ctx = zmq.Context()
         self.sock = ctx.socket(zmq.PUB)
-        self.sock.bind("tcp://127.0.0.1:5555")
+        self.sock.bind(socket_address)
+        logger.info(f"ZeroMQ publisher socket bound to {socket_address}")
 
     def on_any_event(self, event: FileSystemEvent) -> None:
         """Overrides the default FileSystemEventHandler.on_any_event."""
