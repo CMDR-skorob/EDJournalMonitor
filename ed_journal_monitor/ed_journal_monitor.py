@@ -103,9 +103,8 @@ class JournalHandler(RegexMatchingEventHandler):
 
     def switch_journal(self, new_journal_path: bytes | str) -> None:
         """
-        Utility method to switch the currently opened journal to a new one.
-
-        :param new_journal_path: path to the new journal file
+        This method does not override any default method,
+        it is used to switch the currently opened journal to a new one.
         """
         logger.info(f"Switching to new journal: {new_journal_path}")
         self.latest_journal.close()
