@@ -85,21 +85,31 @@ class JournalHandler(RegexMatchingEventHandler):
     def on_any_event(self, event: FileSystemEvent) -> None:
         """Overrides the default FileSystemEventHandler.on_any_event."""
         if event.src_path != self.latest_journal.name:
-            raise ValueError(
-                f"Received event for {event.src_path} but currently "            
-                f"opened journal is {self.latest_journal.name}.")
+            # This can happen when the monitor is started before the game
+            logger.info(f"Received a non-'on-created' event but the "
+                        f"path doesn't match: {event.src_path}")
+            self.switch_journal(event.src_path)
         logger.info(f"EVENT: {event.event_type} - {event.src_path}")
 
     def on_created(self, event: FileSystemEvent) -> None:
         """Overrides the default FileSystemEventHandler.on_created."""
         logger.info(f"New journal created: {event.src_path}")
-        self.latest_journal.close()
-        self.latest_journal = open(event.src_path)
-        self.read_lines()
+        self.switch_journal(event.src_path)
 
     def on_modified(self, event: FileSystemEvent) -> None:
         """Overrides the default FileSystemEventHandler.on_modified."""
         logger.debug(f"File modified: {event.src_path}")
+        self.read_lines()
+
+    def switch_journal(self, new_journal_path: bytes | str) -> None:
+        """
+        Utility method to switch the currently opened journal to a new one.
+
+        :param new_journal_path: path to the new journal file
+        """
+        logger.info(f"Switching to new journal: {new_journal_path}")
+        self.latest_journal.close()
+        self.latest_journal = open(new_journal_path)
         self.read_lines()
 
     def read_lines(self) -> None:
