@@ -69,14 +69,14 @@ class JournalHandler(RegexMatchingEventHandler):
     """
     def __init__(self, 
                  socket_address: str = DEFAULT_SOCKET_ADDRESS) -> None:
-        super().__init__(regexes=[JOURNAL_REGEX], 
-                         ignore_regexes=[], 
-                         ignore_directories=True, 
-                         case_sensitive=True)
         """
         Initialize the JournalHandler by opening the latest journal and 
         setting up the ZeroMQ publisher socket.
         """
+        super().__init__(regexes=[JOURNAL_REGEX], 
+                         ignore_regexes=[], 
+                         ignore_directories=True, 
+                         case_sensitive=True)
         latest_journal_path = _get_latest_journal(JOURNALS_PATH)
         self.latest_journal = open(latest_journal_path)
         self.latest_journal.seek(0, os.SEEK_END)
